@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @author Sherodesigns Team
+ * @copyright Copyright (c) 2016 sherodesigns (http://sherodesigns.com/)
+ * @package Shero_Customername
+ * @Date 12/22/2016
+ */
+-->
+<config>
+    <modules>
+        <Shero_Customermodule> <!--This is the Packagename_modulename -->
+            <version>1.0.0</version> <!--Module version that is saved on core_resource table-->
+        </Shero_Customermodule>
+    </modules>
+
+    <global>
+        <models>
+            <!--Declaring our model path -->
+            <customermodule>
+                <class>Shero_Customermodule_Model</class>
+            </customermodule>
+
+            <!--Rewriting model-->
+            <!--This is the tag that customer is using when declaring models in customer/etc/config.xml. This is the first parameter of Mage::getModel('customer/') method -->
+            <customer>
+                <rewrite> <!--Shows that we are rewriting a Model -->
+                    <!--Customer here is the second parameter of Mage::getModel(' /customer') method. This is the class after Model folder -->
+                    <customer>Shero_Customermodule_Model_Customer</customer>
+                </rewrite>
+            </customer>
+
+            <!--Rewriting observer app/code/core/Mage/Checkout/Model/Observer.php as a normal model class -->
+            <checkout>
+                <rewrite>
+                    <observer>Shero_Customermodule_Model_Observer</observer>
+                </rewrite>
+            </checkout>
+        </models>
+
+        <blocks>
+            <customermodule>
+                <!-- This is our Block path-->
+                <class>Shero_Customermodule_Block</class>
+            </customermodule>
+
+            <customer>
+                <rewrite>
+                    <!--This is Form folder and Register.php class after Block directory from customer module -->
+                    <form_register>Shero_Customermodule_Block_Form_Register</form_register>
+                </rewrite>
+            </customer>
+        </blocks>
+
+        <helpers>
+            <customermodule>
+                <!--Declaring our helper classes -->
+                <class>Shero_Customermodule_Helper</class>
+            </customermodule>
+            <customer>
+                <!--This is the rewrite helper class.  -->
+                <rewrite>
+                    <address>Shero_Customermodule_Helper_Address</address> <!--this tag <address> is the class after Helper folder -->
+                </rewrite>
+            </customer>
+        </helpers>
+    </global>
+
+    <!--Rewriting a controller -->
+    <frontend> <!--This is for frontend routers -->
+        <routers>
+            <customer>
+                <args>
+                    <modules>
+                        <!-- Before going to Customer controller we are going to our module first-->
+                        <shero_customermodule before="Mage_Customer">Shero_Customermodule</shero_customermodule>
+                    </modules>
+                </args>
+            </customer>
+        </routers>
+    </frontend>
+
+
+    <!--Overriding Magento Observers -->
+
+    <frontend>
+        <events>
+            <sales_quote_save_after>
+                <observers>
+                    <!--Ware disabling the other observer  -->
+                    <set_checkout_quote_id>
+                        <type>disabled</type>
+                    </set_checkout_quote_id>
+                    <shero_customermodule_event>
+                        <type>singleton</type>
+                        <class>customermodule/observer</class>
+                        <method>salesQuoteSaveAfter</method>
+                    </shero_customermodule_event>
+                </observers>
+            </sales_quote_save_after>
+        </events>
+    </frontend>
+</config>
